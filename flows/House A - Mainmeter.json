@@ -1,0 +1,1 @@
+[{"id":"e62bd892.19d428","type":"mqtt-broker","broker":"localhost","port":"1883","clientid":""},{"id":"2a1c9a8f.d5e366","type":"mqtt in","name":"House A - Mainmeter","topic":"Testsites/Appartments/ApparmentA/mainmeter/meterevent","broker":"e62bd892.19d428","x":221,"y":511,"z":"363752d9.c9c8ae","wires":[[]]}]
