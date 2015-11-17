@@ -5,3 +5,9 @@ This is part of the [Open Energy Project](http://op-en.se/), a research project 
 ## Description
 
 This is node-RED with some examples.
+
+## What is node-RED?
+
+Node-RED is a tool for wiring together hardware devices, APIs and online services in new and interesting ways.
+
+\- [Node-RED](http://nodered.org/)
