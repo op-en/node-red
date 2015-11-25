@@ -34,7 +34,7 @@ RUN apt-get install -y build-essential git && \
 
 # install nodered nodes
 RUN touch /usr/share/doc/python-rpi.gpio
-COPY nrgpio /usr/local/lib/node_modules/node-red/nodes/core/hardware/nrgpio
+COPY rpi/nrgpio /usr/local/lib/node_modules/node-red/nodes/core/hardware/nrgpio
 RUN chmod 777 /usr/local/lib/node_modules/node-red/nodes/core/hardware/nrgpio
 
 WORKDIR /root/bin
@@ -50,7 +50,7 @@ EXPOSE 1880
 # We add the files to the container, but they are copied to the /root/.node-red folder in the startup script
 # This way, we can access the examples even when the volume is mapped to the host
 # Solution from: http://stackoverflow.com/questions/27959860/how-to-merge-host-folder-with-container-folder-in-docker
-ADD ../flows example-flows
+ADD flows example-flows
 
 # We also map the volume so that any changes done in node-red is saved on the host
 VOLUME ["/root/.node-red"]
@@ -58,7 +58,7 @@ VOLUME ["/root/.node-red"]
 # We use a custom startup script to start the container
 # The commands in this script is run after all the volumes have been mounted
 # So we can merge folders from the host and the container
-ADD startup-script startup-script
+ADD rpi/startup-script startup-script
 
 # We setup the run command. This is what happens when you run the compiled container.
 CMD ["/opt/startup-script"]
