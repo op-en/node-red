@@ -1,0 +1,64 @@
+# DOCKER-VERSION 1.0.0
+FROM resin/rpi-raspbian
+MAINTAINER Leo Fidjeland (leo.fidjeland@gmail.com)
+
+# install required packages, in one command
+RUN apt-get update && \
+    apt-get install -y  python-dev
+
+ENV PYTHON /usr/bin/python2
+
+# install nodejs for rpi
+RUN apt-get install -y wget && \
+    wget http://node-arm.herokuapp.com/node_latest_armhf.deb && \
+    dpkg -i node_latest_armhf.deb && \
+    rm node_latest_armhf.deb && \
+    apt-get autoremove -y wget
+
+# install RPI.GPIO python libs
+RUN apt-get install -y wget && \
+     wget http://downloads.sourceforge.net/project/raspberry-gpio-python/raspbian-wheezy/python-rpi.gpio_0.5.11-1_armhf.deb && \
+     dpkg -i python-rpi.gpio_0.5.11-1_armhf.deb && \
+     rm python-rpi.gpio_0.5.11-1_armhf.deb && \
+     apt-get autoremove -y wget
+
+# install node-red
+RUN apt-get install -y build-essential git && \
+    npm install -g --unsafe-perm  node-red && \
+    npm install node-red-contrib-googlechart  \
+                node-red-node-web-nodes \
+                node-red-contrib-slack \
+                node-red-node-suncalc \
+                node-red-contrib-freeboard && \
+    apt-get autoremove -y build-essential git
+
+# install nodered nodes
+RUN touch /usr/share/doc/python-rpi.gpio
+COPY nrgpio /usr/local/lib/node_modules/node-red/nodes/core/hardware/nrgpio
+RUN chmod 777 /usr/local/lib/node_modules/node-red/nodes/core/hardware/nrgpio
+
+WORKDIR /root/bin
+RUN ln -s /usr/bin/python2 ~/bin/python
+RUN ln -s /usr/bin/python2-config ~/bin/python-config
+env PATH ~/bin:$PATH
+
+# run application
+EXPOSE 1880
+
+# We fill the node-red installation with some examples so that it is easy to start with node-red
+# These are available under [Hamburger]->Import->Library in the node-red console on port 1880
+# We add the files to the container, but they are copied to the /root/.node-red folder in the startup script
+# This way, we can access the examples even when the volume is mapped to the host
+# Solution from: http://stackoverflow.com/questions/27959860/how-to-merge-host-folder-with-container-folder-in-docker
+ADD ../flows example-flows
+
+# We also map the volume so that any changes done in node-red is saved on the host
+VOLUME ["/root/.node-red"]
+
+# We use a custom startup script to start the container
+# The commands in this script is run after all the volumes have been mounted
+# So we can merge folders from the host and the container
+ADD startup-script startup-script
+
+# We setup the run command. This is what happens when you run the compiled container.
+CMD ["/opt/startup-script"]

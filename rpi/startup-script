@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mkdir /root/.node-red/lib
+mkdir /root/.node-red/lib/flows
+cp /opt/example-flows/* /root/.node-red/lib/flows/
+exec node-red-pi -v --max-old-space-size=256
