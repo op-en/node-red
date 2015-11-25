@@ -45,6 +45,7 @@ env PATH ~/bin:$PATH
 # run application
 EXPOSE 1880
 
+WORKDIR /opt
 # We fill the node-red installation with some examples so that it is easy to start with node-red
 # These are available under [Hamburger]->Import->Library in the node-red console on port 1880
 # We add the files to the container, but they are copied to the /root/.node-red folder in the startup script
