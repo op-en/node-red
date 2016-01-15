@@ -61,5 +61,21 @@ VOLUME ["/root/.node-red"]
 # So we can merge folders from the host and the container
 ADD rpi/startup-script startup-script
 
+
+# Zwave
+ENV ZWAVE_VERSION 1.2.919
+WORKDIR /opt
+RUN wget http://old.openzwave.com/downloads/openzwave-${ZWAVE_VERSION}.tar.gz
+
+RUN tar zxvf openzwave-${ZWAVE_VERSION}.gz
+
+WORKDIR /opt/openzwave-${ZWAVE_VERSION}
+RUN make && make install
+ENV LD_LIBRARY_PATH /usr/local/lib
+
+WORKDIR /opt
+
+RUN npm install node-red-contrib-openzwave
+
 # We setup the run command. This is what happens when you run the compiled container.
 CMD ["/opt/startup-script"]
