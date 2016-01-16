@@ -4,34 +4,37 @@ MAINTAINER Leo Fidjeland (leo.fidjeland@gmail.com)
 
 # install required packages, in one command
 RUN apt-get update && \
-    apt-get install -y python-dev
+    apt-get install -y python-dev build-essential git wget pkg-config
 
 ENV PYTHON /usr/bin/python2
 
-# install nodejs for rpi
-# RUN apt-get install -y wget && \
-#     wget http://node-arm.herokuapp.com/node_archive_armhf.deb && \
-#     dpkg -i node_archive_armhf.deb && \
-#     rm node_archive_armhf.deb && \
-#     apt-get autoremove -y wget
-
 # install RPI.GPIO python libs
-#ENV GPIO_VERSION 0.6.1
-#RUN apt-get install -y wget && \
-#     wget http://downloads.sourceforge.net/project/raspberry-gpio-python/raspbian-wheezy/python-rpi.gpio_${GPIO_VERSION}_armhf.deb && \
-#     dpkg -i python-rpi.gpio_${GPIO_VERSION}_armhf.deb && \
-#     rm python-rpi.gpio_${GPIO_VERSION}_armhf.deb && \
-#     apt-get autoremove -y wget
+
+# ENV GPIO_VERSION 0.6.1
+# RUN wget http://downloads.sourceforge.net/project/raspberry-gpio-python/raspbian-wheezy/python-rpi.gpio_${GPIO_VERSION}-wheezy-1_armhf.deb && \
+#     dpkg -i python-rpi.gpio_${GPIO_VERSION}-wheezy-1_armhf.deb && \
+#     rm python-rpi.gpio_${GPIO_VERSION}-wheezy-1_armhf.deb
+
+WORKDIR /opt
+ENV ZWAVE_VERSION 1.4.1
+RUN wget http://old.openzwave.com/downloads/openzwave-${ZWAVE_VERSION}.tar.gz
+
+RUN tar zxvf openzwave-${ZWAVE_VERSION}.tar.gz
+
+WORKDIR /opt/openzwave-${ZWAVE_VERSION}
+RUN apt-get install -y libudev-dev
+RUN make && make install
+ENV LD_LIBRARY_PATH /usr/local/lib
+WORKDIR /opt
 
 # install node-red
-RUN apt-get install -y build-essential git && \
-    npm install -g --unsafe-perm  node-red && \
-    npm install node-red-contrib-googlechart  \
+RUN npm install -g --unsafe-perm  node-red \
+                node-red-contrib-googlechart  \
                 node-red-node-web-nodes \
                 node-red-contrib-slack \
                 node-red-node-suncalc \
-                node-red-contrib-freeboard && \
-    apt-get autoremove -y build-essential git
+                node-red-contrib-freeboard \
+                node-red-contrib-openzwave
 
 # install nodered nodes
 # RUN touch /usr/share/doc/python-rpi.gpio
@@ -62,25 +65,5 @@ VOLUME ["/root/.node-red"]
 # So we can merge folders from the host and the container
 ADD rpi/startup-script startup-script
 
-
-# Zwave
-ENV ZWAVE_VERSION 1.4.1
-WORKDIR /opt
-RUN apt-get install -y wget
-RUN wget http://old.openzwave.com/downloads/openzwave-${ZWAVE_VERSION}.tar.gz
-
-RUN tar zxvf openzwave-${ZWAVE_VERSION}.tar.gz
-
-WORKDIR /opt/openzwave-${ZWAVE_VERSION}
-RUN apt-get install -y libudev-dev
-RUN make && make install
-ENV LD_LIBRARY_PATH /usr/local/lib
-
-WORKDIR /opt
-
-RUN apt-get install -y build-essential
-RUN apt-get install -y pkg-config
-# RUN npm install node-red-contrib-openzwave
-
 # We setup the run command. This is what happens when you run the compiled container.
-# CMD ["/opt/startup-script"]
+CMD ["/opt/startup-script"]
