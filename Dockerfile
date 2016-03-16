@@ -4,13 +4,14 @@ MAINTAINER Leo Fidjeland (leo.fidjeland@gmail.com)
 
 WORKDIR /opt
 # install node-red
-RUN npm install -g \
+RUN npm install -g --unsafe-perm \
   node-red \
   # node-red-node-xmpp \ NOTE: Build fails currently.
   node-red-node-web-nodes \
   node-red-contrib-googlechart \
   node-red-contrib-slack \
   node-red-node-suncalc \
+  node-red-contrib-influxdb \
   node-red-contrib-freeboard
 
 # We expose the node-red port so that we can access it from the host
