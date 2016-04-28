@@ -1,12 +1,12 @@
 # The first lines of your Dockerfile should always be:
-FROM node:0.12
+FROM node:4
 MAINTAINER Leo Fidjeland (leo.fidjeland@gmail.com)
 
 WORKDIR /opt
 # install node-red
 RUN npm install -g --unsafe-perm \
   node-red \
-  # node-red-node-xmpp \ NOTE: Build fails currently.
+  node-red-node-xmpp \
   node-red-node-web-nodes \
   node-red-contrib-googlechart \
   node-red-contrib-slack \
